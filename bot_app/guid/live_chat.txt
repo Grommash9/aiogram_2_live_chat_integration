@@ -1,0 +1,8 @@
+Please go to https://my.livechatinc.com/settings/availability and change the availability to "Always".
+This way, customers will be able to send a message even if you’re offline
+
+
+https://developers.livechat.com/docs/management/configuration-api#register-webhook
+
+
+https://developers.livechat.com/docs/management/configuration-api#create-agent
