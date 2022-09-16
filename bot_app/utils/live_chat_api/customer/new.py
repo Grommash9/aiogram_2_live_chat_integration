@@ -32,7 +32,6 @@ async def create():
              'lc_cid': lc_cid_results[0],
              'lc_cst': lc_cst_results[0]}
 
-            print(data)
             return data
 
 

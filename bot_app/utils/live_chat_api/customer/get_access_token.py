@@ -15,9 +15,6 @@ async def get(lc_cid, lc_cst):
           "license_id": config.LICENSE_ID,
           "redirect_uri": "https://livechat.cool/"
         })
-        headers = {
-          'Content-Type': 'application/json'
-        }
 
         headers = {
             'Content-Type': 'application/json',
@@ -28,14 +25,9 @@ async def get(lc_cid, lc_cst):
         async with session.post('https://accounts.livechat.com/customer/token', data=payload, headers=headers) as response:
             json_response = await response.json()
 
-            lc_cid_results = re.findall(r'__lc_cid=([0-9a-z-]+);', response.cookies.output())
-            lc_cst_results = re.findall(r'__lc_cst=([0-9a-z]+);', response.cookies.output())
+            data = {'access_token': json_response['access_token']}
 
-            data = {'access_token': json_response['access_token'],
-             'lc_cid': lc_cid_results[0],
-             'lc_cst': lc_cst_results[0]}
-
-            print(data)
+            return data
 
 
 

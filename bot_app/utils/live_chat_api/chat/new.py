@@ -1,7 +1,5 @@
 import json
-import re
 import aiohttp
-import asyncio
 from bot_app import config
 
 
@@ -20,6 +18,3 @@ async def create(customer_access_token):
             json_response = await response.json()
 
             return json_response
-
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(create('dal:lGk5QgwpTtCHFAbpi0_wlg'))

@@ -23,7 +23,7 @@ async def get_live_chat_event(request: Request):
 
     chat_id = data['payload'].get('chat_id')
 
-
+    print(data['payload'])
 
     if data['payload']['event']['author_id'] != 'andreevichprudnikov@gmail.com':
         return

@@ -8,11 +8,11 @@ import os
 
 cwd = Path().cwd()
 
-
+WEBHOOK_SECRET_CODE = os.getenv('WEBHOOK_SECRET_CODE')
+BASE64_ENCODED = os.getenv('BASE64_ENCODED')
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 ORGANIZATION_ID = os.getenv('ORGANIZATION_ID')
-PERSONAL_ACCESS_TOKEN = os.getenv('PERSONAL_ACCESS_TOKEN')
 LICENSE_ID = int(os.getenv('LICENSE_ID'))
 
 ROUTE_URL = os.getenv('ROUTE_URL')

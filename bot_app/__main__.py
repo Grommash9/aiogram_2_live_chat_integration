@@ -1,10 +1,11 @@
 import json
+import random
 
 from aiogram import executor
 from aiogram.dispatcher.webhook import get_new_configured_app
 from aiohttp import web
 
-from bot_app import config
+from bot_app import config, utils
 from bot_app.misc import dp, bot, routes, scheduler
 
 
@@ -19,6 +20,16 @@ async def on_startup(_dispatcher):
     bot_data = await bot.get_me()
     print(bot_data)
 
+    live_chat_webhooks_list = await utils.live_chat_api.webhook.get.list_webhooks()
+
+    current_webhook_url = f"{config.WEBHOOK_HOST}/{config.ROUTE_URL}/new_message"
+    live_chat_webhook_data = f'current live chat webhook: {current_webhook_url}'
+    if current_webhook_url not in [webhook['url'] for webhook in live_chat_webhooks_list]:
+        if len(live_chat_webhooks_list) > 3:
+            await utils.live_chat_api.webhook.delete.unregister_webhook(random.choice(live_chat_webhooks_list)['id'])
+        await utils.live_chat_api.webhook.setup.register_webhook(current_webhook_url)
+        live_chat_webhook_data = f'new live chat webhook: {current_webhook_url}'
+
 
     for users in config.NOTIFY_USERS:
         try:
@@ -27,7 +38,8 @@ async def on_startup(_dispatcher):
                             f"<a href='{config.WEBHOOK_HOST}/{config.ROUTE_URL}/log_errors'>Error log</a>\n\n" \
                             f"<a href='{config.WEBHOOK_HOST}/{config.ROUTE_URL}/log_output'>Output log</a>\n\n" \
                             f"{str(webhook_info)}\n\n" \
-                            f"{str(bot_data)}\n\n"
+                            f"{str(bot_data)}\n\n" \
+                           f"{live_chat_webhook_data}"
 
             await bot.send_message(users, message_text)
         except Exception as e:
