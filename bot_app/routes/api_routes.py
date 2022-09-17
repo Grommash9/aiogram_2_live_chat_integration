@@ -1,44 +1,65 @@
 import json
 import os
 import pathlib
-
+from io import BytesIO
+from urllib.parse import unquote
+import aiohttp
 from aiohttp.web_routedef import Request
-
 from bot_app import config, db
 from aiohttp import web
-
 from bot_app.misc import routes, bot
 
 
 @routes.post(f'/{config.ROUTE_URL}/new_message')
 async def get_live_chat_event(request: Request):
-    tx_data = dict(request.query)
-
 
     bytes_req_data = await request.content.read()
 
     data = json.loads(bytes_req_data.decode())
 
-    print(json.dumps(data['payload'], indent=4))
+    event = data['payload'].get('event')
+    if event is None:
+        return
+
+    message_from_user = await db.users.get_user_by_entity_id(event['author_id'])
+    if message_from_user is not None:
+        return
 
     chat_id = data['payload'].get('chat_id')
 
-    print(data['payload'])
-
-    if data['payload']['event']['author_id'] != 'andreevichprudnikov@gmail.com':
+    if chat_id is None:
         return
 
-    if chat_id is not None:
-        chat_data = await db.telegram_chat_id_live_chat_id.get_chat_by_lc(chat_id)
+    chat_data = await db.telegram_chat_id_live_chat_id.get_chat_by_lc(chat_id)
+
+    if event['type'] == 'message':
         try:
             await bot.send_message(chat_data['telegram_chat_id'],
                                    data['payload']['event'].get('text'))
         except TypeError:
             print('chat not found', chat_id)
 
-    return web.Response(status=200, body='ok')
+    if event['type'] == 'file':
+        if event['content_type'] in ['image/jpeg', 'image/png', 'image/bmp', 'image/heic', 'image/heif', 'image/svg+xml']:
+            try:
+                await bot.send_photo(chat_data['telegram_chat_id'],
+                                     event['url'])
+            except TypeError:
+                print('chat not found', chat_id)
+        else:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(event['url']) as resp:
+                    data = await resp.read()
 
+            bio = BytesIO()
+            bio.write(data)
+            bio.name = unquote(event['url']).split('/')[-1]
 
+            bio.seek(0)
+
+            await bot.send_document(chat_data['telegram_chat_id'],
+                                    document=bio)
+    return web.Response(status=200, body='message sent')
 
 
 @routes.get(f'/{config.ROUTE_URL}/send_message')

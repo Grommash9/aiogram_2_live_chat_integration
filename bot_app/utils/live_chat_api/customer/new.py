@@ -23,21 +23,16 @@ async def create():
         async with session.post('https://accounts.livechat.com/customer/token', data=payload, headers=headers) as response:
             json_response = await response.json()
 
-            print(json_response)
-
             lc_cid_results = re.findall(r'__lc_cid=([0-9a-z-]+);', response.cookies.output())
             lc_cst_results = re.findall(r'__lc_cst=([0-9a-z]+);', response.cookies.output())
 
             data = {'access_token': json_response['access_token'],
-             'lc_cid': lc_cid_results[0],
-             'lc_cst': lc_cst_results[0]}
+                    'lc_cid': lc_cid_results[0],
+                    'lc_cst': lc_cst_results[0],
+                    'entity_id': json_response['entity_id']}
 
             return data
 
 
-
-#
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(create())
 
 

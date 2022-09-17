@@ -7,7 +7,8 @@ async def new(user):
 
     await db.users.add_live_chat_cookie_data(user.id,
                                              customer_data['lc_cid'],
-                                             customer_data['lc_cst'])
+                                             customer_data['lc_cst'],
+                                             customer_data['entity_id'])
 
     profile_photos = await user.get_profile_photos(limit=1)
     try:

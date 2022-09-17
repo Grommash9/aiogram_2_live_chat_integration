@@ -5,3 +5,4 @@ from . import create_user
 from . import user_access_token
 from . import agent
 from . import webhook
+from . import files
