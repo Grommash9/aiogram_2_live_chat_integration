@@ -40,7 +40,7 @@ async def get_live_chat_event(request: Request):
             print('chat not found', chat_id)
 
     if event['type'] == 'file':
-        if event['content_type'] in ['image/jpeg', 'image/png', 'image/bmp', 'image/heic', 'image/heif', 'image/svg+xml']:
+        if event['content_type'] in ['image/jpeg', 'image/png', 'image/bmp']:
             try:
                 await bot.send_photo(chat_data['telegram_chat_id'],
                                      event['url'])
