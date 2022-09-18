@@ -51,10 +51,10 @@ async def new_message(message: Message):
                                           live_chat_id=live_chat_id,
                                           message_text=message.text)
 
-    # await bot.send_message(message.from_user.id,
-    #                        'dadad')
-    #
-    # await utils.live_chat_api.agent.message.send(live_chat_id, 'dadad')
+    await bot.send_message(message.from_user.id,
+                           'dadad')
+
+    await utils.live_chat_api.agent.message.send(live_chat_id, 'dadad', True)
 
 
 @dp.message_handler(content_types=aiogram.types.ContentTypes.PHOTO)

@@ -7,8 +7,7 @@ import aiohttp
 from aiohttp.web_routedef import Request
 from bot_app import config, db
 from aiohttp import web
-from bot_app.misc import routes, bot
-
+from bot_app.misc import routes, bot, redis
 
 @routes.post(f'/{config.ROUTE_URL}/new_message')
 async def get_live_chat_event(request: Request):
@@ -21,6 +20,8 @@ async def get_live_chat_event(request: Request):
     if event is None:
         return
 
+
+
     message_from_user = await db.users.get_user_by_entity_id(event['author_id'])
     if message_from_user is not None:
         return
@@ -28,6 +29,10 @@ async def get_live_chat_event(request: Request):
     chat_id = data['payload'].get('chat_id')
 
     if chat_id is None:
+        return
+
+    silent = await redis.get(event["id"])
+    if silent is not None:
         return
 
     chat_data = await db.telegram_chat_id_live_chat_id.get_chat_by_lc(chat_id)

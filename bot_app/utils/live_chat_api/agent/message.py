@@ -1,9 +1,13 @@
 import aiohttp
 import json
+
+import redis
+from bot_app.misc import redis
 from bot_app import config
 
 
-async def send(chat_id, message_text):
+async def send(chat_id, message_text, silent=False):
+
 
     url = "https://api.livechatinc.com/v3.4/agent/action/send_event"
 
@@ -24,5 +28,8 @@ async def send(chat_id, message_text):
         async with session.post(url,
                                 headers=headers, data=payload) as response:
             json_response = await response.json()
-
+            if silent:
+                await redis.set(json_response['event_id'], 5)
             return json_response
+
+
